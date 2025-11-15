@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import './nprogress.css';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Toaster } from '@/components/ui/toaster';
+import { ProgressBar } from '@/components/progress-bar';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: 'NationOS: Unified Governance',
@@ -24,6 +27,9 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
+        <Suspense>
+          <ProgressBar />
+        </Suspense>
         <AppLayout>{children}</AppLayout>
         <Toaster />
       </body>
