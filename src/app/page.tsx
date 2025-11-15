@@ -12,12 +12,12 @@ import {
 } from '@/components/ui/chart';
 import {
   Bar,
+  BarChart,
   CartesianGrid,
+  Line,
+  LineChart,
   XAxis,
   YAxis,
-  BarChart as RechartsBarChart,
-  Line,
-  LineChart as RechartsLineChart,
 } from 'recharts';
 
 const populationData = [
@@ -122,7 +122,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="pl-2">
             <ChartContainer config={chartConfig} className="h-[300px] w-full">
-              <RechartsBarChart
+              <BarChart
                 accessibilityLayer
                 data={populationData}
                 margin={{
@@ -151,7 +151,7 @@ export default function DashboardPage() {
                   fill="var(--color-population)"
                   radius={8}
                 />
-              </RechartsBarChart>
+              </BarChart>
             </ChartContainer>
           </CardContent>
         </Card>
@@ -161,7 +161,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="h-[300px] w-full">
-              <RechartsLineChart
+              <LineChart
                 accessibilityLayer
                 data={economicData}
                 margin={{
@@ -205,7 +205,7 @@ export default function DashboardPage() {
                   yAxisId="right"
                   name="Unemployment"
                 />
-              </RechartsLineChart>
+              </LineChart>
             </ChartContainer>
           </CardContent>
         </Card>
