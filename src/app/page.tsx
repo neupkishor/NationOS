@@ -1,13 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  BarChart,
   Briefcase,
-  Building,
   DollarSign,
-  Droplets,
   Tractor,
   Users,
-  Vote,
 } from 'lucide-react';
 import {
   ChartContainer,
