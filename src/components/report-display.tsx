@@ -37,7 +37,7 @@ const chartConfig = {
 const dummyData = [
   { name: 'Category A', value: 4000 },
   { name: 'Category B', value: 3000 },
-  { name 'Category C', value: 2000 },
+  { name: 'Category C', value: 2000 },
   { name: 'Category D', value: 2780 },
   { name: 'Category E', value: 1890 },
 ];
