@@ -1,7 +1,5 @@
 import {
-  BarChart,
   Briefcase,
-  Building,
   HardHat,
   Home,
   LineChart,
@@ -9,6 +7,7 @@ import {
   Tractor,
   Users,
   Wallet,
+  BarChart,
 } from 'lucide-react';
 
 export const NAV_LINKS = [
