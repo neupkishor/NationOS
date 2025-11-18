@@ -134,7 +134,7 @@ export default function OccupationEntryPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                    <Label htmlFor="salary">Salary (Annual)</Label>
+                    <Label htmlFor="salary">Salary (Monthly)</Label>
                     <Input id="salary" type="number" {...register("salary")} />
                 </div>
 
