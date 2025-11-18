@@ -1,10 +1,14 @@
 
+
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-import { Users2, ChevronRight } from "lucide-react";
+import { Users2, ChevronRight, BookUser, Briefcase, HeartCrack } from "lucide-react";
 
 const entrySections = [
   { href: "/entry/citizen", icon: Users2, title: "Citizen Entry", description: "Add a new citizen record to the database." },
+  { href: "/entry/death-registration", icon: HeartCrack, title: "Death Registration", description: "Record a citizen's death." },
+  { href: "/entry/education", icon: BookUser, title: "Education Record", description: "Add educational qualifications for a citizen." },
+  { href: "/entry/occupation", icon: Briefcase, title: "Occupation Record", description: "Add employment details for a citizen." },
 ];
 
 export default function EntryPage() {
@@ -44,3 +48,5 @@ export default function EntryPage() {
     </div>
   );
 }
+
+    
