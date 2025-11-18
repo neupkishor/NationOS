@@ -21,7 +21,9 @@ export function MainNav() {
 
   const isActive = (path: string) => {
     if (path === '/') return pathname === '/';
-    return pathname.startsWith(path);
+    // For setup, we want to match parent and all children
+    if (path === '/setup') return pathname.startsWith('/setup');
+    return pathname.startsWith(path) && (pathname.length === path.length || pathname[path.length] === '/');
   };
 
   return (
