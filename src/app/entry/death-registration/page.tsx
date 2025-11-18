@@ -76,6 +76,14 @@ export default function DeathRegistrationPage() {
         placeOfDeath: data.placeOfDeath,
         causeOfDeath: data.causeOfDeath,
       });
+
+      const birthRegCollection = collection(firestore, `citizens/${data.citizenId}/birthRegistrations`);
+      // Add a dummy birth registration for stats calculation
+      await addDocumentNonBlocking(birthRegCollection, {
+        registrationDate: new Date().toISOString().split('T')[0],
+        placeOfBirth: "N/A"
+      });
+
       toast({
         title: "Success",
         description: "Death registration record has been saved.",

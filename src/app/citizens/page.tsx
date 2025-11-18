@@ -17,7 +17,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Users, TrendingUp, TrendingDown, Home } from 'lucide-react';
 import { useFirestore } from '@/firebase';
-import { collection, getDocs, query } from 'firebase/firestore';
+import { collection, getDocs, query, where, collectionGroup } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
 type Citizen = {
@@ -35,6 +35,8 @@ export default function CitizenRegistryPage() {
   const firestore = useFirestore();
   const [citizens, setCitizens] = useState<Citizen[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [birthsThisYear, setBirthsThisYear] = useState(0);
+  const [deathsThisYear, setDeathsThisYear] = useState(0);
 
   useEffect(() => {
     if (!firestore) return;
@@ -48,7 +50,32 @@ export default function CitizenRegistryPage() {
       setIsLoading(false);
     };
 
+    const fetchVitals = async () => {
+        const currentYear = new Date().getFullYear();
+        const startDate = new Date(currentYear, 0, 1).toISOString().split('T')[0];
+        const endDate = new Date(currentYear, 11, 31).toISOString().split('T')[0];
+  
+        // Fetch births this year
+        const birthsQuery = query(
+          collectionGroup(firestore, 'birthRegistrations'),
+          where('registrationDate', '>=', startDate),
+          where('registrationDate', '<=', endDate)
+        );
+        const birthsSnapshot = await getDocs(birthsQuery);
+        setBirthsThisYear(birthsSnapshot.size);
+  
+        // Fetch deaths this year
+        const deathsQuery = query(
+          collectionGroup(firestore, 'deathRegistrations'),
+          where('dateOfDeath', '>=', startDate),
+          where('dateOfDeath', '<=', endDate)
+        );
+        const deathsSnapshot = await getDocs(deathsQuery);
+        setDeathsThisYear(deathsSnapshot.size);
+      };
+
     fetchCitizens();
+    fetchVitals();
   }, [firestore]);
 
 
@@ -78,8 +105,8 @@ export default function CitizenRegistryPage() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+12,345</div>
-            <p className="text-xs text-muted-foreground">+2% from last year</p>
+            <div className="text-2xl font-bold">{isLoading ? '...' : `+${birthsThisYear.toLocaleString()}`}</div>
+            <p className="text-xs text-muted-foreground">Live data from database</p>
           </CardContent>
         </Card>
         <Card>
@@ -90,8 +117,8 @@ export default function CitizenRegistryPage() {
             <TrendingDown className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">-4,567</div>
-            <p className="text-xs text-muted-foreground">-0.5% from last year</p>
+            <div className="text-2xl font-bold">{isLoading ? '...' : `-${deathsThisYear.toLocaleString()}`}</div>
+            <p className="text-xs text-muted-foreground">Live data from database</p>
           </CardContent>
         </Card>
         <Card>
