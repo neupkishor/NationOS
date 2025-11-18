@@ -10,7 +10,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { Tractor, AreaChart, Wheat, Sheep } from 'lucide-react';
+import { Tractor, AreaChart, Wheat, Drama } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 const cropData = [
@@ -83,7 +83,7 @@ export default function AgricultureLivestockPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Livestock Count</CardTitle>
-            <Sheep className="h-4 w-4 text-muted-foreground" />
+            <Drama className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">205k Heads</div>
