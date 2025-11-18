@@ -7,17 +7,24 @@ import {
   Tractor,
   Users,
   Wallet,
+  Globe,
+  Database
 } from 'lucide-react';
 
 export const NAV_LINKS = [
   { href: '/', label: 'Dashboard', icon: Home },
-  { href: '/report', label: 'Smart Reporting', icon: LineChart },
   { href: '/citizen-registry', label: 'Citizen Registry', icon: Users },
-  { href: '/economic-employment', label: 'Economic & Employment', icon: Briefcase },
+  { href: '/report', label: 'Smart Reporting', icon: LineChart },
+  { href: '/economic-employment', label: 'Economic', icon: Briefcase },
   { href: '/agriculture', label: 'Agriculture', icon: Tractor },
-  { href: '/residency-migration', label: 'Residency & Migration', icon: Wallet },
-  { href: '/infrastructure-resources', label: 'Infrastructure', icon: HardHat },
 ];
+
+export const SYSTEM_LINKS = [
+    { href: '/residency-migration', label: 'Residency', icon: Wallet },
+    { href: '/infrastructure-resources', label: 'Infrastructure', icon: HardHat },
+    { href: '/resources', label: 'Resources', icon: Database },
+];
+
 
 export const FOOTER_LINKS = [
     { href: '/setup', label: 'Settings', icon: Settings },
