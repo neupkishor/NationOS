@@ -8,6 +8,8 @@ import {
   Percent,
   BookOpenCheck,
   Baby,
+  PersonStanding,
+  UserCheck,
 } from 'lucide-react';
 import {
   ChartContainer,
@@ -30,6 +32,7 @@ import { useEffect, useState } from 'react';
 type Citizen = {
   id: string;
   dateOfBirth: string;
+  gender: 'male' | 'female' | 'other';
 };
 
 type Employment = {
@@ -65,6 +68,8 @@ const chartConfig = {
   },
 };
 
+const gcd = (a: number, b: number): number => b ? gcd(b, a % b) : a;
+
 export default function DashboardPage() {
   const firestore = useFirestore();
   const [totalPopulation, setTotalPopulation] = useState(0);
@@ -72,6 +77,8 @@ export default function DashboardPage() {
   const [employmentRate, setEmploymentRate] = useState(0);
   const [childrenPercentage, setChildrenPercentage] = useState(0);
   const [educationAccess, setEducationAccess] = useState(0);
+  const [maleFemaleRatio, setMaleFemaleRatio] = useState('N/A');
+  const [childAdultRatio, setChildAdultRatio] = useState('N/A');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -86,7 +93,7 @@ export default function DashboardPage() {
       const citizens = citizensSnapshot.docs.map(doc => doc.data() as Citizen);
       setTotalPopulation(citizensSnapshot.size);
 
-      // Calculate children percentage
+      // Calculate children percentage and ratios
       if (citizens.length > 0) {
         const today = new Date();
         const under18 = citizens.filter(c => {
@@ -99,6 +106,17 @@ export default function DashboardPage() {
           return age < 18;
         }).length;
         setChildrenPercentage((under18 / citizens.length) * 100);
+
+        const adults = citizens.length - under18;
+        const ageDivisor = gcd(under18, adults);
+        setChildAdultRatio(`${(under18 / ageDivisor).toFixed(0)} : ${(adults / ageDivisor).toFixed(0)}`);
+        
+        const males = citizens.filter(c => c.gender === 'male').length;
+        const females = citizens.filter(c => c.gender === 'female').length;
+        if (males > 0 || females > 0) {
+          const genderDivisor = gcd(males, females);
+          setMaleFemaleRatio(`${(males / genderDivisor).toFixed(0)} : ${(females / genderDivisor).toFixed(0)}`);
+        }
       }
 
       // Fetch employments for income and employment rate
@@ -154,7 +172,7 @@ export default function DashboardPage() {
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Population</CardTitle>
@@ -190,23 +208,45 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Children (Under 18)</CardTitle>
-            <Baby className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{isLoading ? '...' : `${childrenPercentage.toFixed(1)}%`}</div>
-            <p className="text-xs text-muted-foreground">Of total population</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">School Access (&lt;1km)</CardTitle>
             <BookOpenCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{isLoading ? '...' : `${educationAccess.toFixed(1)}%`}</div>
             <p className="text-xs text-muted-foreground">Live education data</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Male : Female Ratio</CardTitle>
+            <PersonStanding className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{isLoading ? '...' : maleFemaleRatio}</div>
+            <p className="text-xs text-muted-foreground">From citizen gender data</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Children : Adult Ratio</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{isLoading ? '...' : childAdultRatio}</div>
+            <p className="text-xs text-muted-foreground">Under 18 vs. 18 and over</p>
+          </CardContent>
+        </Card>
+         <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Children (Under 18)</CardTitle>
+            <Baby className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{isLoading ? '...' : `${childrenPercentage.toFixed(1)}%`}</div>
+            <p className="text-xs text-muted-foreground">Of total population</p>
           </CardContent>
         </Card>
       </div>
