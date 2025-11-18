@@ -19,6 +19,7 @@ import { Users, TrendingUp, TrendingDown, Home } from 'lucide-react';
 import { useFirestore } from '@/firebase';
 import { collection, getDocs, query, where, collectionGroup } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 type Citizen = {
   id: string;
@@ -160,7 +161,11 @@ export default function CitizenRegistryPage() {
               ) : citizens.map((citizen) => (
                 <TableRow key={citizen.id}>
                   <TableCell className="font-medium">{citizen.citizenshipNumber}</TableCell>
-                  <TableCell>{citizen.name}</TableCell>
+                  <TableCell>
+                    <Link href={`/citizens/${citizen.id}`} className="hover:underline text-primary">
+                      {citizen.name}
+                    </Link>
+                  </TableCell>
                   <TableCell>{citizen.dateOfBirth}</TableCell>
                   <TableCell>{citizen.gender}</TableCell>
                   <TableCell>
