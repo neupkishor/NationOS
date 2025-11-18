@@ -5,7 +5,7 @@ service cloud.firestore {
     // They allow all reads and writes to your database for the next 15 days.
     // Replace with secure rules before deploying to production.
     match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2024, 8, 2);
+      allow read, write: if request.time < timestamp.date(2024, 8, 3);
     }
   }
 }

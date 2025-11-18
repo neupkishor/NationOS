@@ -14,10 +14,12 @@ import {
   MapPin,
   Users2,
   Shield,
+  FilePlus,
 } from 'lucide-react';
 
 export const NAV_LINKS = [
   { href: '/', label: 'Dashboard', icon: Home },
+  { href: '/entry', label: 'Data Entry', icon: FilePlus },
   { href: '/citizen-registry', label: 'Citizen Registry', icon: Users },
   { href: '/report', label: 'Smart Reporting', icon: LineChart },
   { href: '/economic-employment', label: 'Economic', icon: Briefcase },

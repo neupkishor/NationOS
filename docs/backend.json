@@ -62,6 +62,52 @@
         "gender"
       ]
     },
+    "CitizenEntry": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "CitizenEntry",
+      "type": "object",
+      "description": "Represents a simplified citizen data entry.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The full name of the citizen."
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "description": "The date of birth of the citizen.",
+          "format": "date"
+        },
+        "gender": {
+          "type": "string",
+          "description": "The gender of the citizen."
+        },
+        "citizenshipNumber": {
+          "type": "string",
+          "description": "The citizen's unique identification number."
+        },
+        "citizenshipType": {
+          "type": "string",
+          "description": "The type of citizenship (e.g., By Birth, Naturalized)."
+        },
+        "currentLocation": {
+          "type": "string",
+          "description": "The current residing location of the citizen."
+        },
+        "location": {
+          "type": "string",
+          "description": "The permanent location or address of the citizen."
+        }
+      },
+      "required": [
+        "name",
+        "dateOfBirth",
+        "gender",
+        "citizenshipNumber",
+        "citizenshipType",
+        "currentLocation",
+        "location"
+      ]
+    },
     "BirthRegistration": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "BirthRegistration",
@@ -620,6 +666,22 @@
           ]
         }
       },
+       {
+        "path": "/citizens/{citizenId}",
+        "definition": {
+          "entityName": "CitizenEntry",
+          "schema": {
+            "$ref": "#/backend/entities/CitizenEntry"
+          },
+          "description": "Represents a simplified citizen data entry record. Stored in a top-level collection.",
+          "params": [
+            {
+              "name": "citizenId",
+              "description": "The unique identifier for the citizen entry."
+            }
+          ]
+        }
+      },
       {
         "path": "/citizens/{citizenId}/birthRegistrations/{birthRegistrationId}",
         "definition": {
@@ -908,4 +970,3 @@
     "reasoning": "The Firestore structure is designed to support the NationOS application's requirements for managing citizen data, economic details, agricultural information, and infrastructure. The design prioritizes authorization independence, clarity, and scalability.  Path-based ownership is used where applicable to simply security rules.  Homogeneous collections are preferred. \n\n**Authorization Independence:** To avoid hierarchical authorization dependencies, information like familyId or residencyId, which might be used for authorization in related collections, are denormalized into child documents where necessary. This eliminates the need for `get()` calls in security rules, enabling atomic operations and improving security and scalability. For example, the Citizen documents are placed under the familyId, which makes the authorization easy. Also, the citizenId is copied into the child document for ownership/authorization checks.\n\n**QAPs (Rules Are Not Filters):** The structure supports secure `list` operations by ensuring that each collection contains documents with a homogeneous security posture. By colocating all Citizen records under the `/families/{familyId}/citizens/{citizenId}` path, for example, it's possible to define security rules that apply uniformly to all documents in the collection. Reports are stored in /citizens/{citizenId}/reports/{reportId}, which guarantees only the Citizen can access the report.  \n\n**Global Roles (DBAC):** Global roles (e.g., administrators) are not explicitly implemented in this structure since the prompt specified 'No Custom Claims'.  If global roles were required, a separate collection, such as `/roles_admin/{uid}`, would be used to indicate admin status via document existence."
   }
 }
-    
