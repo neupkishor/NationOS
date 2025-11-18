@@ -14,9 +14,10 @@ import {
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { useFirestore } from "@/firebase";
 import { addDocumentNonBlocking } from "@/firebase/non-blocking-updates";
-import { collection } from "firebase/firestore";
+import { collection, getDocs, query } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
 
 type Inputs = {
   name: string;
@@ -28,11 +29,35 @@ type Inputs = {
   location: string;
 };
 
+type Region = {
+  id: string;
+  name: string;
+};
+
 export default function CitizenEntryPage() {
   const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
   const { register, handleSubmit, control, formState: { errors } } = useForm<Inputs>();
+  
+  const [regions, setRegions] = useState<Region[]>([]);
+  const [isLoadingRegions, setIsLoadingRegions] = useState(true);
+
+  useEffect(() => {
+    if (!firestore) return;
+
+    const fetchRegions = async () => {
+      setIsLoadingRegions(true);
+      const regionsQuery = query(collection(firestore, 'regions'));
+      const querySnapshot = await getDocs(regionsQuery);
+      const fetchedRegions = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Region[];
+      setRegions(fetchedRegions);
+      setIsLoadingRegions(false);
+    };
+
+    fetchRegions();
+  }, [firestore]);
+
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!firestore) {
@@ -91,7 +116,7 @@ export default function CitizenEntryPage() {
                   control={control}
                   rules={{ required: true }}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select gender" />
                       </SelectTrigger>
@@ -121,7 +146,7 @@ export default function CitizenEntryPage() {
                   control={control}
                   rules={{ required: true }}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
@@ -139,13 +164,53 @@ export default function CitizenEntryPage() {
             
              <div className="space-y-2">
               <Label htmlFor="currentLocation">Current Location</Label>
-              <Input id="currentLocation" {...register("currentLocation", { required: true })} />
+               <Controller
+                  name="currentLocation"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select current location" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {isLoadingRegions ? (
+                          <SelectItem value="loading" disabled>Loading regions...</SelectItem>
+                        ) : (
+                          regions.map(region => (
+                            <SelectItem key={region.id} value={region.name}>{region.name}</SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               {errors.currentLocation && <p className="text-destructive text-sm">Current Location is required.</p>}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="location">Permanent Location / Address</Label>
-              <Input id="location" {...register("location", { required: true })} />
+               <Controller
+                  name="location"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select permanent location" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {isLoadingRegions ? (
+                          <SelectItem value="loading" disabled>Loading regions...</SelectItem>
+                        ) : (
+                          regions.map(region => (
+                            <SelectItem key={region.id} value={region.name}>{region.name}</SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               {errors.location && <p className="text-destructive text-sm">Location is required.</p>}
             </div>
 
