@@ -25,7 +25,7 @@ export const NAV_LINKS = [
   { href: '/economic-employment', label: 'Economic', icon: Briefcase },
   { href: '/agriculture', label: 'Agriculture', icon: Tractor },
   { href: '/residency-migration', label: 'Residency', icon: Wallet },
-  { href: '/infrastructure-resources', label: 'Infrastructure', icon: HardHat },
+  { href: '/infrastructure', label: 'Infrastructure', icon: HardHat },
 ];
 
 export const SYSTEM_LINKS = [
