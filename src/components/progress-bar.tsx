@@ -11,18 +11,15 @@ export function ProgressBar() {
   useEffect(() => {
     NProgress.configure({ showSpinner: false });
 
-    const handleStart = () => NProgress.start();
+    // The route change start event is not needed as nprogress is started on component mount and
+    // is stopped when the new page is loaded.
     const handleStop = () => NProgress.done();
 
-    handleStop(); // Stop progress on initial load
+    NProgress.start();
 
     return () => {
       handleStop(); // Ensure progress stops on component unmount
     };
-  }, []);
-
-  useEffect(() => {
-    NProgress.done();
   }, [pathname, searchParams]);
 
   return null;
