@@ -1,7 +1,8 @@
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Building, MapPin, Users2, Shield } from "lucide-react";
+import { Building, MapPin, Users2, Shield, ChevronRight } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 const setupSections = [
   { href: "/setup/organization", icon: Building, title: "Organization", description: "Configure your organization details." },
@@ -20,26 +21,30 @@ export default function SetupPage() {
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {setupSections.map((section) => (
-          <Card key={section.href}>
-            <CardHeader>
-              <div className="flex items-center gap-4">
-                <div className='p-2 bg-secondary rounded-md'>
-                  <section.icon className="h-6 w-6 text-muted-foreground" />
-                </div>
-                <CardTitle>{section.title}</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground text-sm mb-4">{section.description}</p>
-              <Button asChild variant="outline">
-                <Link href={section.href}>Go to {section.title}</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <Card>
+        <CardContent className="p-0">
+          <ul className="divide-y divide-border">
+            {setupSections.map((section, index) => (
+              <li key={section.href}>
+                <Link href={section.href} className="block hover:bg-muted/50">
+                  <div className="flex items-center justify-between p-4">
+                    <div className="flex items-center gap-4">
+                      <div className='p-2 bg-secondary rounded-md'>
+                        <section.icon className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                      <div>
+                        <p className="font-semibold">{section.title}</p>
+                        <p className="text-sm text-muted-foreground">{section.description}</p>
+                      </div>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
     </div>
   );
 }
