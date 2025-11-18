@@ -268,8 +268,7 @@
         "citizenId",
         "migrationDate",
         "fromLocation",
-        "toLocation",
-        "reason"
+        "toLocation"
       ]
     },
     "Education": {

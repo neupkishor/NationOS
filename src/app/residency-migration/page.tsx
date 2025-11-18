@@ -1,3 +1,6 @@
+
+'use client';
+
 import {
   Card,
   CardContent,
@@ -12,6 +15,9 @@ import {
 } from '@/components/ui/chart';
 import { Globe, Plane, Shuffle, Users } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
+import { useFirestore } from '@/firebase';
+import { collectionGroup, getDocs, query } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 
 const migrationData = [
   { year: '2020', internal: 12000, international: 4500 },
@@ -27,6 +33,25 @@ const chartConfig = {
 };
 
 export default function ResidencyMigrationPage() {
+  const firestore = useFirestore();
+  const [totalMigrations, setTotalMigrations] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!firestore) return;
+
+    const fetchMigrations = async () => {
+      setIsLoading(true);
+      const migrationQuery = query(collectionGroup(firestore, 'migrationHistories'));
+      const querySnapshot = await getDocs(migrationQuery);
+      setTotalMigrations(querySnapshot.size);
+      setIsLoading(false);
+    };
+    
+    fetchMigrations();
+  }, [firestore]);
+
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <h2 className="text-3xl font-bold tracking-tight">
@@ -48,13 +73,13 @@ export default function ResidencyMigrationPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Temporary Residents
+              Total Migrations
             </CardTitle>
-            <Globe className="h-4 w-4 text-muted-foreground" />
+            <Shuffle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2.7M</div>
-            <p className="text-xs text-muted-foreground">Students, Workers, etc.</p>
+            <div className="text-2xl font-bold">{isLoading ? '...' : totalMigrations.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">Total recorded movements</p>
           </CardContent>
         </Card>
         <Card>
