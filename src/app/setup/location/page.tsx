@@ -1,3 +1,4 @@
+
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 
 export default function LocationSetupPage() {
@@ -6,10 +7,10 @@ export default function LocationSetupPage() {
       <Card>
         <CardHeader>
           <CardTitle>Location Setup</CardTitle>
-          <CardDescription>Configure locations for your organization.</CardDescription>
+          <CardDescription>This page has been moved to /setup/region.</CardDescription>
         </CardHeader>
         <CardContent>
-          <p>Location setup form will go here.</p>
+          <p>Please update your bookmarks.</p>
         </CardContent>
       </Card>
     </div>

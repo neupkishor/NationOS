@@ -1,12 +1,11 @@
-import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+
+import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { Building, MapPin, Users2, Shield, ChevronRight } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 
 const setupSections = [
   { href: "/setup/organization", icon: Building, title: "Organization", description: "Configure your organization details." },
-  { href: "/setup/location", icon: MapPin, title: "Location", description: "Set up wards, districts, and regions." },
+  { href: "/setup/region", icon: MapPin, title: "Region", description: "Set up wards, districts, and regions." },
   { href: "/setup/team", icon: Users2, title: "Team", description: "Manage users and team members." },
   { href: "/setup/permissions", icon: Shield, title: "Permissions", description: "Define roles and access levels." },
 ];
@@ -24,7 +23,7 @@ export default function SetupPage() {
       <Card>
         <CardContent className="p-0">
           <ul className="divide-y divide-border">
-            {setupSections.map((section, index) => (
+            {setupSections.map((section) => (
               <li key={section.href}>
                 <Link href={section.href} className="block hover:bg-muted/50">
                   <div className="flex items-center justify-between p-4">

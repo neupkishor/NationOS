@@ -12,25 +12,25 @@ import {
 } from "@/components/ui/table";
 import { Plus } from "lucide-react";
 
-const organizations = [
-  { id: "org_1", name: "Ministry of Health", region: "National", location: "Capital City" },
-  { id: "org_2", name: "District A Education Board", region: "District A", location: "Townsville" },
+const regions = [
+  { id: "region_1", name: "National", type: "Country" },
+  { id: "region_2", name: "District A", type: "District" },
 ];
 
-export default function OrganizationSetupPage() {
+export default function RegionSetupPage() {
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Organizations</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Regions</h2>
           <p className="text-muted-foreground">
-            Manage your organization hierarchy.
+            Manage administrative regions, districts, and wards.
           </p>
         </div>
         <Button asChild>
-          <Link href="/setup/organization/create">
+          <Link href="/setup/region/create">
             <Plus className="mr-2 h-4 w-4" />
-            Create Organization
+            Create Region
           </Link>
         </Button>
       </div>
@@ -40,20 +40,18 @@ export default function OrganizationSetupPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
-                <TableHead>Region</TableHead>
-                <TableHead>Location</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {organizations.map((org) => (
-                <TableRow key={org.id}>
-                  <TableCell className="font-medium">{org.name}</TableCell>
-                  <TableCell>{org.region}</TableCell>
-                  <TableCell>{org.location}</TableCell>
+              {regions.map((region) => (
+                <TableRow key={region.id}>
+                  <TableCell className="font-medium">{region.name}</TableCell>
+                  <TableCell>{region.type}</TableCell>
                   <TableCell className="text-right">
                     <Button variant="outline" size="sm" asChild>
-                      <Link href={`/setup/organization/${org.id}/edit`}>Edit</Link>
+                      <Link href={`/setup/region/${region.id}/edit`}>Edit</Link>
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -65,3 +63,4 @@ export default function OrganizationSetupPage() {
     </div>
   );
 }
+
