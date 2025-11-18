@@ -5,8 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useDoc, useFirestore, useMemoFirebase } from "@/firebase";
-import { doc } from "firebase/firestore";
+import { useFirestore } from "@/firebase";
+import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { updateDocumentNonBlocking } from "@/firebase/non-blocking-updates";
@@ -21,26 +21,39 @@ export default function EditRegionPage({ params }: { params: { id: string } }) {
   const firestore = useFirestore();
   const router = useRouter();
 
-  const regionRef = useMemoFirebase(() => {
-    if (!firestore || !params.id) return null;
-    return doc(firestore, 'regions', params.id);
-  }, [firestore, params.id]);
-  
-  const { data: region, isLoading } = useDoc<Region>(regionRef);
+  const [region, setRegion] = useState<Region | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [name, setName] = useState('');
   const [type, setType] = useState('');
 
   useEffect(() => {
-    if (region) {
-      setName(region.name);
-      setType(region.type);
+    if (!firestore || !params.id) return;
+
+    const fetchRegion = async () => {
+      setIsLoading(true);
+      const regionRef = doc(firestore, 'regions', params.id);
+      const docSnap = await getDoc(regionRef);
+
+      if (docSnap.exists()) {
+        const regionData = { id: docSnap.id, ...docSnap.data() } as Region;
+        setRegion(regionData);
+        setName(regionData.name);
+        setType(regionData.type);
+      } else {
+        console.log("No such document!");
+      }
+      setIsLoading(false);
     }
-  }, [region]);
+    
+    fetchRegion();
+  }, [firestore, params.id]);
+
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!regionRef) return;
+    if (!firestore) return;
+    const regionRef = doc(firestore, 'regions', params.id);
     updateDocumentNonBlocking(regionRef, { name, type });
     router.push('/setup/region');
   };

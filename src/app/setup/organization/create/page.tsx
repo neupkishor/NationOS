@@ -12,11 +12,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
-import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
+import { useFirestore } from "@/firebase";
 import { addDocumentNonBlocking } from "@/firebase/non-blocking-updates";
-import { collection, query } from "firebase/firestore";
+import { collection, query, getDocs } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Region = {
   id: string;
@@ -31,12 +31,24 @@ export default function CreateOrganizationPage() {
   const [regionId, setRegionId] = useState('');
   const [location, setLocation] = useState('');
 
-  const regionsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'regions'));
+  const [regions, setRegions] = useState<Region[]>([]);
+  const [isLoadingRegions, setIsLoadingRegions] = useState(true);
+
+  useEffect(() => {
+    if (!firestore) return;
+
+    const fetchRegions = async () => {
+      setIsLoadingRegions(true);
+      const regionsQuery = query(collection(firestore, 'regions'));
+      const querySnapshot = await getDocs(regionsQuery);
+      const fetchedRegions = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Region[];
+      setRegions(fetchedRegions);
+      setIsLoadingRegions(false);
+    };
+
+    fetchRegions();
   }, [firestore]);
 
-  const { data: regions, isLoading: isLoadingRegions } = useCollection<Region>(regionsQuery);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();

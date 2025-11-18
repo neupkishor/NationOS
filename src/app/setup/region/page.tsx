@@ -12,8 +12,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus } from "lucide-react";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection, query } from "firebase/firestore";
+import { useFirestore } from "@/firebase";
+import { collection, getDocs, query } from "firebase/firestore";
+import { useEffect, useState } from "react";
 
 type Region = {
   id: string,
@@ -23,13 +24,24 @@ type Region = {
 
 export default function RegionSetupPage() {
   const firestore = useFirestore();
+  const [regions, setRegions] = useState<Region[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    if (!firestore) return;
 
-  const regionsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'regions'));
+    const fetchRegions = async () => {
+      setIsLoading(true);
+      const regionsQuery = query(collection(firestore, 'regions'));
+      const querySnapshot = await getDocs(regionsQuery);
+      const fetchedRegions = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Region[];
+      setRegions(fetchedRegions);
+      setIsLoading(false);
+    };
+
+    fetchRegions();
   }, [firestore]);
 
-  const { data: regions, isLoading } = useCollection<Region>(regionsQuery);
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">

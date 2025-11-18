@@ -12,8 +12,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus } from "lucide-react";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection, query } from "firebase/firestore";
+import { useFirestore } from "@/firebase";
+import { collection, getDocs, query } from "firebase/firestore";
+import { useEffect, useState } from "react";
 
 type Organization = {
   id: string;
@@ -22,23 +23,41 @@ type Organization = {
   location: string;
 };
 
+type Region = {
+  id: string;
+  name: string;
+}
+
 export default function OrganizationSetupPage() {
   const firestore = useFirestore();
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [regions, setRegions] = useState<Region[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const organizationsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'organizations'));
-  }, [firestore]);
-
-  const { data: organizations, isLoading } = useCollection<Organization>(organizationsQuery);
-
-  const regionsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'regions'));
-  }, [firestore]);
-  
-  const { data: regions } = useCollection<{id: string, name: string}>(regionsQuery);
   const regionMap = regions ? new Map(regions.map(r => [r.id, r.name])) : new Map();
+
+  useEffect(() => {
+    if (!firestore) return;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      // Fetch organizations
+      const orgsQuery = query(collection(firestore, 'organizations'));
+      const orgsSnapshot = await getDocs(orgsQuery);
+      const fetchedOrgs = orgsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Organization[];
+      setOrganizations(fetchedOrgs);
+
+      // Fetch regions
+      const regionsQuery = query(collection(firestore, 'regions'));
+      const regionsSnapshot = await getDocs(regionsQuery);
+      const fetchedRegions = regionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Region[];
+      setRegions(fetchedRegions);
+      
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, [firestore]);
 
 
   return (

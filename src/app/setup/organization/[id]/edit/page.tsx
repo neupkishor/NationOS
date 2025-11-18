@@ -12,8 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
-import { useFirestore, useDoc, useCollection, useMemoFirebase } from "@/firebase";
-import { doc, collection, query } from "firebase/firestore";
+import { useFirestore } from "@/firebase";
+import { doc, collection, query, getDoc, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateDocumentNonBlocking } from "@/firebase/non-blocking-updates";
@@ -35,40 +35,52 @@ export default function EditOrganizationPage({ params }: { params: { id: string 
   const firestore = useFirestore();
   const router = useRouter();
 
-  const orgRef = useMemoFirebase(() => {
-    if (!firestore || !params.id) return null;
-    return doc(firestore, "organizations", params.id);
-  }, [firestore, params.id]);
-
-  const { data: organization, isLoading: isLoadingOrg } = useDoc<Organization>(orgRef);
-
-  const regionsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'regions'));
-  }, [firestore]);
-
-  const { data: regions, isLoading: isLoadingRegions } = useCollection<Region>(regionsQuery);
+  const [organization, setOrganization] = useState<Organization | null>(null);
+  const [regions, setRegions] = useState<Region[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [name, setName] = useState('');
   const [regionId, setRegionId] = useState('');
   const [location, setLocation] = useState('');
 
   useEffect(() => {
-    if (organization) {
-      setName(organization.name);
-      setRegionId(organization.regionId);
-      setLocation(organization.location);
-    }
-  }, [organization]);
+    if (!firestore || !params.id) return;
+
+    const fetchInitialData = async () => {
+      setIsLoading(true);
+      
+      // Fetch the organization
+      const orgRef = doc(firestore, "organizations", params.id);
+      const orgSnap = await getDoc(orgRef);
+      if (orgSnap.exists()) {
+        const orgData = { ...orgSnap.data(), id: orgSnap.id } as Organization;
+        setOrganization(orgData);
+        setName(orgData.name);
+        setRegionId(orgData.regionId);
+        setLocation(orgData.location);
+      }
+
+      // Fetch regions
+      const regionsQuery = query(collection(firestore, 'regions'));
+      const regionsSnap = await getDocs(regionsQuery);
+      const regionsData = regionsSnap.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Region[];
+      setRegions(regionsData);
+
+      setIsLoading(false);
+    };
+
+    fetchInitialData();
+  }, [firestore, params.id]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!orgRef) return;
+    if (!firestore) return;
+    const orgRef = doc(firestore, "organizations", params.id);
     await updateDocumentNonBlocking(orgRef, { name, regionId, location });
     router.push('/setup/organization');
   };
   
-  if (isLoadingOrg) {
+  if (isLoading) {
     return <div>Loading...</div>
   }
 
@@ -92,7 +104,7 @@ export default function EditOrganizationPage({ params }: { params: { id: string 
                   <SelectValue placeholder="Select a region" />
                 </SelectTrigger>
                 <SelectContent>
-                   {isLoadingRegions ? (
+                   {regions.length === 0 ? (
                      <SelectItem value="loading" disabled>Loading regions...</SelectItem>
                   ) : (
                     regions?.map(region => (
