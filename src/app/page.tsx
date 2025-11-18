@@ -27,7 +27,7 @@ import {
   YAxis,
 } from 'recharts';
 import { useFirestore } from '@/firebase';
-import { collection, collectionGroup, getDocs, query } from 'firebase/firestore';
+import { collection, collectionGroup, getDocs, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
 type Citizen = {
@@ -145,12 +145,18 @@ export default function DashboardPage() {
       const employmentsSnapshot = await getDocs(employmentsQuery);
       const employments = employmentsSnapshot.docs.map(doc => doc.data() as Employment);
       
+      const employedQuery = query(
+        collectionGroup(firestore, 'employments'),
+        where('employmentStatus', '==', 'Employed')
+      );
+      const employedSnapshot = await getDocs(employedQuery);
+      const employedCount = employedSnapshot.size;
+      
+      if (populationSize > 0) {
+        setEmploymentRate((employedCount / populationSize) * 100);
+      }
+      
       if (employments.length > 0) {
-        const employed = employments.filter(e => e.employmentStatus === 'Employed');
-        if (populationSize > 0) {
-          setEmploymentRate((employed.length / populationSize) * 100);
-        }
-        
         const salaried = employments.filter(e => e.salary && e.salary > 0).map(e => e.salary as number);
         if(salaried.length > 0) {
           const totalMonthlySalary = salaried.reduce((acc, salary) => acc + salary, 0);
@@ -351,6 +357,8 @@ export default function DashboardPage() {
       </div>
     </div>
   );
+
+    
 
     
 
