@@ -1,0 +1,823 @@
+{
+  "entities": {
+    "Citizen": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Citizen",
+      "type": "object",
+      "description": "Represents a citizen within the NationOS system.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the citizen."
+        },
+        "birthRegistrationId": {
+          "type": "string",
+          "description": "Reference to BirthRegistration. (Relationship: Citizen 1:1 BirthRegistration)"
+        },
+        "deathRegistrationId": {
+          "type": "string",
+          "description": "Reference to DeathRegistration. (Relationship: Citizen 1:1 DeathRegistration) Nullable if the citizen is alive."
+        },
+        "familyId": {
+          "type": "string",
+          "description": "Reference to Family. (Relationship: Family 1:N Citizen)"
+        },
+        "residencyId": {
+          "type": "string",
+          "description": "Reference to Residency. (Relationship: Residency 1:N Citizen)"
+        },
+        "migrationHistoryIds": {
+          "type": "array",
+          "description": "References to MigrationHistory entries. (Relationship: MigrationHistory 1:N Citizen)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the citizen."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the citizen."
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "description": "The date of birth of the citizen.",
+          "format": "date-time"
+        },
+        "gender": {
+          "type": "string",
+          "description": "The gender of the citizen."
+        }
+      },
+      "required": [
+        "id",
+        "birthRegistrationId",
+        "familyId",
+        "residencyId",
+        "firstName",
+        "lastName",
+        "dateOfBirth",
+        "gender"
+      ]
+    },
+    "BirthRegistration": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "BirthRegistration",
+      "type": "object",
+      "description": "Represents the registration of a birth.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the birth registration."
+        },
+        "registrationDate": {
+          "type": "string",
+          "description": "The date of the birth registration.",
+          "format": "date-time"
+        },
+        "placeOfBirth": {
+          "type": "string",
+          "description": "The place where the birth occurred."
+        }
+      },
+      "required": [
+        "id",
+        "registrationDate",
+        "placeOfBirth"
+      ]
+    },
+    "DeathRegistration": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "DeathRegistration",
+      "type": "object",
+      "description": "Represents the registration of a death.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the death registration."
+        },
+        "registrationDate": {
+          "type": "string",
+          "description": "The date of the death registration.",
+          "format": "date-time"
+        },
+        "placeOfDeath": {
+          "type": "string",
+          "description": "The place where the death occurred."
+        },
+        "causeOfDeath": {
+          "type": "string",
+          "description": "The cause of death."
+        }
+      },
+      "required": [
+        "id",
+        "registrationDate",
+        "placeOfDeath",
+        "causeOfDeath"
+      ]
+    },
+    "Family": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Family",
+      "type": "object",
+      "description": "Represents a family unit.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the family."
+        },
+        "familyName": {
+          "type": "string",
+          "description": "The name of the family."
+        },
+        "address": {
+          "type": "string",
+          "description": "The address of the family."
+        }
+      },
+      "required": [
+        "id",
+        "familyName",
+        "address"
+      ]
+    },
+    "Residency": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Residency",
+      "type": "object",
+      "description": "Represents the residency information of a citizen.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the residency."
+        },
+        "ward": {
+          "type": "string",
+          "description": "The ward of the residency."
+        },
+        "district": {
+          "type": "string",
+          "description": "The district of the residency."
+        },
+        "country": {
+          "type": "string",
+          "description": "The country of the residency."
+        },
+        "isPermanent": {
+          "type": "boolean",
+          "description": "Indicates whether the residency is permanent."
+        }
+      },
+      "required": [
+        "id",
+        "ward",
+        "district",
+        "country",
+        "isPermanent"
+      ]
+    },
+    "MigrationHistory": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MigrationHistory",
+      "type": "object",
+      "description": "Represents the migration history of a citizen.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the migration history entry."
+        },
+        "citizenId": {
+          "type": "string",
+          "description": "Reference to Citizen. (Relationship: Citizen 1:N MigrationHistory)"
+        },
+        "migrationDate": {
+          "type": "string",
+          "description": "The date of the migration.",
+          "format": "date-time"
+        },
+        "fromLocation": {
+          "type": "string",
+          "description": "The location from which the citizen migrated."
+        },
+        "toLocation": {
+          "type": "string",
+          "description": "The location to which the citizen migrated."
+        },
+        "reason": {
+          "type": "string",
+          "description": "The reason for the migration."
+        }
+      },
+      "required": [
+        "id",
+        "citizenId",
+        "migrationDate",
+        "fromLocation",
+        "toLocation",
+        "reason"
+      ]
+    },
+    "Employment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Employment",
+      "type": "object",
+      "description": "Represents employment details of a citizen.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the employment record."
+        },
+        "citizenId": {
+          "type": "string",
+          "description": "Reference to Citizen. (Relationship: Citizen 1:N Employment)"
+        },
+        "occupation": {
+          "type": "string",
+          "description": "The occupation of the citizen."
+        },
+        "salary": {
+          "type": "number",
+          "description": "The salary of the citizen."
+        },
+        "unemploymentStatus": {
+          "type": "string",
+          "description": "The unemployment status of the citizen."
+        }
+      },
+      "required": [
+        "id",
+        "citizenId",
+        "occupation",
+        "salary",
+        "unemploymentStatus"
+      ]
+    },
+    "HouseholdIncome": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "HouseholdIncome",
+      "type": "object",
+      "description": "Represents the household income details.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the household income record."
+        },
+        "familyId": {
+          "type": "string",
+          "description": "Reference to Family. (Relationship: Family 1:N HouseholdIncome)"
+        },
+        "totalIncome": {
+          "type": "number",
+          "description": "The total income of the household."
+        },
+        "incomeSources": {
+          "type": "string",
+          "description": "Description of income sources."
+        }
+      },
+      "required": [
+        "id",
+        "familyId",
+        "totalIncome",
+        "incomeSources"
+      ]
+    },
+    "Skill": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Skill",
+      "type": "object",
+      "description": "Represents a skill possessed by a citizen.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the skill."
+        },
+        "citizenId": {
+          "type": "string",
+          "description": "Reference to Citizen. (Relationship: Citizen 1:N Skill)"
+        },
+        "skillName": {
+          "type": "string",
+          "description": "The name of the skill."
+        },
+        "skillLevel": {
+          "type": "string",
+          "description": "The level of the skill (e.g., beginner, intermediate, expert)."
+        }
+      },
+      "required": [
+        "id",
+        "citizenId",
+        "skillName",
+        "skillLevel"
+      ]
+    },
+    "LoanSubsidyEligibility": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "LoanSubsidyEligibility",
+      "type": "object",
+      "description": "Represents the eligibility of a citizen for loans and subsidies.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the loan subsidy eligibility record."
+        },
+        "citizenId": {
+          "type": "string",
+          "description": "Reference to Citizen. (Relationship: Citizen 1:N LoanSubsidyEligibility)"
+        },
+        "programName": {
+          "type": "string",
+          "description": "The name of the loan or subsidy program."
+        },
+        "isEligible": {
+          "type": "boolean",
+          "description": "Indicates whether the citizen is eligible for the program."
+        }
+      },
+      "required": [
+        "id",
+        "citizenId",
+        "programName",
+        "isEligible"
+      ]
+    },
+    "AgriculturalProduction": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AgriculturalProduction",
+      "type": "object",
+      "description": "Represents agricultural production data.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the agricultural production record."
+        },
+        "familyId": {
+          "type": "string",
+          "description": "Reference to Family. (Relationship: Family 1:N AgriculturalProduction)"
+        },
+        "cropType": {
+          "type": "string",
+          "description": "The type of crop being grown."
+        },
+        "cultivationArea": {
+          "type": "number",
+          "description": "The total cultivation area in acres."
+        },
+        "expectedProduction": {
+          "type": "number",
+          "description": "The expected production of the crop in tons."
+        },
+        "actualProduction": {
+          "type": "number",
+          "description": "The actual production of the crop in tons."
+        },
+        "salesOutsideDistrict": {
+          "type": "number",
+          "description": "Sales of crops outside the district."
+        },
+        "salesInsideDistrict": {
+          "type": "number",
+          "description": "Sales of crops inside the district."
+        }
+      },
+      "required": [
+        "id",
+        "familyId",
+        "cropType",
+        "cultivationArea",
+        "expectedProduction",
+        "actualProduction",
+        "salesOutsideDistrict",
+        "salesInsideDistrict"
+      ]
+    },
+    "LivestockCount": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "LivestockCount",
+      "type": "object",
+      "description": "Represents livestock count data.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the livestock count record."
+        },
+        "familyId": {
+          "type": "string",
+          "description": "Reference to Family. (Relationship: Family 1:N LivestockCount)"
+        },
+        "livestockType": {
+          "type": "string",
+          "description": "The type of livestock (e.g., cattle, goats, poultry)."
+        },
+        "count": {
+          "type": "number",
+          "description": "The number of livestock of the specified type."
+        }
+      },
+      "required": [
+        "id",
+        "familyId",
+        "livestockType",
+        "count"
+      ]
+    },
+    "Infrastructure": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Infrastructure",
+      "type": "object",
+      "description": "Represents infrastructure data.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the infrastructure record."
+        },
+        "infrastructureType": {
+          "type": "string",
+          "description": "The type of infrastructure (e.g., road, school, hospital)."
+        },
+        "location": {
+          "type": "string",
+          "description": "The location of the infrastructure."
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the infrastructure (e.g., operational, under construction)."
+        }
+      },
+      "required": [
+        "id",
+        "infrastructureType",
+        "location",
+        "status"
+      ]
+    },
+    "Resource": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Resource",
+      "type": "object",
+      "description": "Represents resource data.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the resource record."
+        },
+        "resourceType": {
+          "type": "string",
+          "description": "The type of resource (e.g., water supply, electricity coverage, internet penetration)."
+        },
+        "availability": {
+          "type": "number",
+          "description": "The availability of the resource (e.g., percentage of households with access)."
+        },
+        "location": {
+          "type": "string",
+          "description": "The location the resource is available."
+        }
+      },
+      "required": [
+        "id",
+        "resourceType",
+        "availability",
+        "location"
+      ]
+    },
+    "Report": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Report",
+      "type": "object",
+      "description": "Represents a generated report.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the report."
+        },
+        "reportType": {
+          "type": "string",
+          "description": "The type of report (e.g., ward-level, municipality-level)."
+        },
+        "generationDate": {
+          "type": "string",
+          "description": "The date the report was generated.",
+          "format": "date-time"
+        },
+        "content": {
+          "type": "string",
+          "description": "The content of the report (e.g., JSON or Markdown)."
+        },
+        "citizenId": {
+          "type": "string",
+          "description": "Reference to Citizen. The citizen who requested the report. (Relationship: Citizen 1:N Report)"
+        }
+      },
+      "required": [
+        "id",
+        "reportType",
+        "generationDate",
+        "content"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/families/{familyId}",
+        "definition": {
+          "entityName": "Family",
+          "schema": {
+            "$ref": "#/backend/entities/Family"
+          },
+          "description": "Represents a family unit. Used as a top-level collection for family-related data.",
+          "params": [
+            {
+              "name": "familyId",
+              "description": "The unique identifier for the family."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/families/{familyId}/citizens/{citizenId}",
+        "definition": {
+          "entityName": "Citizen",
+          "schema": {
+            "$ref": "#/backend/entities/Citizen"
+          },
+          "description": "Represents a citizen within a family. The familyId is denormalized, copied from the parent document, to enable authorization independence.",
+          "params": [
+            {
+              "name": "familyId",
+              "description": "The unique identifier for the family."
+            },
+            {
+              "name": "citizenId",
+              "description": "The unique identifier for the citizen."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/citizens/{citizenId}/birthRegistrations/{birthRegistrationId}",
+        "definition": {
+          "entityName": "BirthRegistration",
+          "schema": {
+            "$ref": "#/backend/entities/BirthRegistration"
+          },
+          "description": "Represents a birth registration record for a citizen. Parent citizenId is copied from parent document for authorization independence.",
+          "params": [
+            {
+              "name": "citizenId",
+              "description": "The unique identifier for the citizen."
+            },
+            {
+              "name": "birthRegistrationId",
+              "description": "The unique identifier for the birth registration."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/citizens/{citizenId}/deathRegistrations/{deathRegistrationId}",
+        "definition": {
+          "entityName": "DeathRegistration",
+          "schema": {
+            "$ref": "#/backend/entities/DeathRegistration"
+          },
+          "description": "Represents a death registration record for a citizen. Parent citizenId is copied from parent document for authorization independence.",
+          "params": [
+            {
+              "name": "citizenId",
+              "description": "The unique identifier for the citizen."
+            },
+            {
+              "name": "deathRegistrationId",
+              "description": "The unique identifier for the death registration."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/citizens/{citizenId}/residencies/{residencyId}",
+        "definition": {
+          "entityName": "Residency",
+          "schema": {
+            "$ref": "#/backend/entities/Residency"
+          },
+          "description": "Represents the residency information for a citizen. Parent citizenId is copied from parent document for authorization independence.",
+          "params": [
+            {
+              "name": "citizenId",
+              "description": "The unique identifier for the citizen."
+            },
+            {
+              "name": "residencyId",
+              "description": "The unique identifier for the residency."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/citizens/{citizenId}/migrationHistories/{migrationHistoryId}",
+        "definition": {
+          "entityName": "MigrationHistory",
+          "schema": {
+            "$ref": "#/backend/entities/MigrationHistory"
+          },
+          "description": "Represents the migration history of a citizen. Parent citizenId is copied from parent document for authorization independence.",
+          "params": [
+            {
+              "name": "citizenId",
+              "description": "The unique identifier for the citizen."
+            },
+            {
+              "name": "migrationHistoryId",
+              "description": "The unique identifier for the migration history entry."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/citizens/{citizenId}/employments/{employmentId}",
+        "definition": {
+          "entityName": "Employment",
+          "schema": {
+            "$ref": "#/backend/entities/Employment"
+          },
+          "description": "Represents employment details of a citizen. Parent citizenId is copied from parent document for authorization independence.",
+          "params": [
+            {
+              "name": "citizenId",
+              "description": "The unique identifier for the citizen."
+            },
+            {
+              "name": "employmentId",
+              "description": "The unique identifier for the employment record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/families/{familyId}/householdIncomes/{householdIncomeId}",
+        "definition": {
+          "entityName": "HouseholdIncome",
+          "schema": {
+            "$ref": "#/backend/entities/HouseholdIncome"
+          },
+          "description": "Represents household income details for a family.  familyId is denormalized from the parent document, and is available in child documents to make security trules more robust.",
+          "params": [
+            {
+              "name": "familyId",
+              "description": "The unique identifier for the family."
+            },
+            {
+              "name": "householdIncomeId",
+              "description": "The unique identifier for the household income record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/citizens/{citizenId}/skills/{skillId}",
+        "definition": {
+          "entityName": "Skill",
+          "schema": {
+            "$ref": "#/backend/entities/Skill"
+          },
+          "description": "Represents a skill possessed by a citizen. Parent citizenId is copied from parent document for authorization independence.",
+          "params": [
+            {
+              "name": "citizenId",
+              "description": "The unique identifier for the citizen."
+            },
+            {
+              "name": "skillId",
+              "description": "The unique identifier for the skill."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/citizens/{citizenId}/loanSubsidyEligibilities/{loanSubsidyEligibilityId}",
+        "definition": {
+          "entityName": "LoanSubsidyEligibility",
+          "schema": {
+            "$ref": "#/backend/entities/LoanSubsidyEligibility"
+          },
+          "description": "Represents the eligibility of a citizen for loans and subsidies. Parent citizenId is copied from parent document for authorization independence.",
+          "params": [
+            {
+              "name": "citizenId",
+              "description": "The unique identifier for the citizen."
+            },
+            {
+              "name": "loanSubsidyEligibilityId",
+              "description": "The unique identifier for the loan subsidy eligibility record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/families/{familyId}/agriculturalProductions/{agriculturalProductionId}",
+        "definition": {
+          "entityName": "AgriculturalProduction",
+          "schema": {
+            "$ref": "#/backend/entities/AgriculturalProduction"
+          },
+          "description": "Represents agricultural production data for a family. familyId is denormalized from the parent document, and is available in child documents to make security trules more robust.",
+          "params": [
+            {
+              "name": "familyId",
+              "description": "The unique identifier for the family."
+            },
+            {
+              "name": "agriculturalProductionId",
+              "description": "The unique identifier for the agricultural production record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/families/{familyId}/livestockCounts/{livestockCountId}",
+        "definition": {
+          "entityName": "LivestockCount",
+          "schema": {
+            "$ref": "#/backend/entities/LivestockCount"
+          },
+          "description": "Represents livestock count data for a family. familyId is denormalized from the parent document, and is available in child documents to make security trules more robust.",
+          "params": [
+            {
+              "name": "familyId",
+              "description": "The unique identifier for the family."
+            },
+            {
+              "name": "livestockCountId",
+              "description": "The unique identifier for the livestock count record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/infrastructures/{infrastructureId}",
+        "definition": {
+          "entityName": "Infrastructure",
+          "schema": {
+            "$ref": "#/backend/entities/Infrastructure"
+          },
+          "description": "Represents infrastructure data.",
+          "params": [
+            {
+              "name": "infrastructureId",
+              "description": "The unique identifier for the infrastructure record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/resources/{resourceId}",
+        "definition": {
+          "entityName": "Resource",
+          "schema": {
+            "$ref": "#/backend/entities/Resource"
+          },
+          "description": "Represents resource data.",
+          "params": [
+            {
+              "name": "resourceId",
+              "description": "The unique identifier for the resource record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/citizens/{citizenId}/reports/{reportId}",
+        "definition": {
+          "entityName": "Report",
+          "schema": {
+            "$ref": "#/backend/entities/Report"
+          },
+          "description": "Represents a report generated for a citizen. Parent citizenId is copied from parent document for authorization independence.",
+          "params": [
+            {
+              "name": "citizenId",
+              "description": "The unique identifier for the citizen."
+            },
+            {
+              "name": "reportId",
+              "description": "The unique identifier for the report."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to support the NationOS application's requirements for managing citizen data, economic details, agricultural information, and infrastructure. The design prioritizes authorization independence, clarity, and scalability.  Path-based ownership is used where applicable to simply security rules.  Homogeneous collections are preferred. \n\n**Authorization Independence:** To avoid hierarchical authorization dependencies, information like familyId or residencyId, which might be used for authorization in related collections, are denormalized into child documents where necessary. This eliminates the need for `get()` calls in security rules, enabling atomic operations and improving security and scalability. For example, the Citizen documents are placed under the familyId, which makes the authorization easy. Also, the citizenId is copied into the child document for ownership/authorization checks.\n\n**QAPs (Rules Are Not Filters):** The structure supports secure `list` operations by ensuring that each collection contains documents with a homogeneous security posture. By colocating all Citizen records under the `/families/{familyId}/citizens/{citizenId}` path, for example, it's possible to define security rules that apply uniformly to all documents in the collection. Reports are stored in /citizens/{citizenId}/reports/{reportId}, which guarantees only the Citizen can access the report.  \n\n**Global Roles (DBAC):** Global roles (e.g., administrators) are not explicitly implemented in this structure since the prompt specified 'No Custom Claims'.  If global roles were required, a separate collection, such as `/roles_admin/{uid}`, would be used to indicate admin status via document existence."
+  }
+}
