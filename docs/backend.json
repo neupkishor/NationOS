@@ -297,6 +297,14 @@
         "graduationYear": {
           "type": "string",
           "description": "The year of graduation."
+        },
+        "nearbySchoolAccessDistance": {
+          "type": "number",
+          "description": "Distance to the nearest school in kilometers."
+        },
+        "nearbyCollegeAccessDistance": {
+          "type": "number",
+          "description": "Distance to the nearest college in kilometers."
         }
       },
       "required": [
@@ -1041,5 +1049,3 @@
     "reasoning": "The Firestore structure is designed to support the NationOS application's requirements for managing citizen data, economic details, agricultural information, and infrastructure. The design prioritizes authorization independence, clarity, and scalability.  Path-based ownership is used where applicable to simply security rules.  Homogeneous collections are preferred. \n\n**Authorization Independence:** To avoid hierarchical authorization dependencies, information like familyId or residencyId, which might be used for authorization in related collections, are denormalized into child documents where necessary. This eliminates the need for `get()` calls in security rules, enabling atomic operations and improving security and scalability. For example, the Citizen documents are placed under the familyId, which makes the authorization easy. Also, the citizenId is copied into the child document for ownership/authorization checks.\n\n**QAPs (Rules Are Not Filters):** The structure supports secure `list` operations by ensuring that each collection contains documents with a homogeneous security posture. By colocating all Citizen records under the `/citizens/{citizenId}` path, for example, it's possible to define security rules that apply uniformly to all documents in the collection. Reports are stored in /citizens/{citizenId}/reports/{reportId}, which guarantees only the Citizen can access the report.  \n\n**Global Roles (DBAC):** Global roles (e.g., administrators) are not explicitly implemented in this structure since the prompt specified 'No Custom Claims'.  If global roles were required, a separate collection, such as `/roles_admin/{uid}`, would be used to indicate admin status via document existence."
   }
 }
-
-    

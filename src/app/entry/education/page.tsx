@@ -26,6 +26,8 @@ type Inputs = {
   degree: string;
   fieldOfStudy: string;
   graduationYear: string;
+  nearbySchoolAccessDistance: number;
+  nearbyCollegeAccessDistance: number;
 };
 
 type Citizen = {
@@ -71,11 +73,9 @@ export default function EducationEntryPage() {
     const educationCollection = collection(firestore, `citizens/${data.citizenId}/education`);
     try {
       await addDocumentNonBlocking(educationCollection, {
-        citizenId: data.citizenId,
-        institution: data.institution,
-        degree: data.degree,
-        fieldOfStudy: data.fieldOfStudy,
-        graduationYear: data.graduationYear,
+        ...data,
+        nearbySchoolAccessDistance: Number(data.nearbySchoolAccessDistance),
+        nearbyCollegeAccessDistance: Number(data.nearbyCollegeAccessDistance),
       });
       toast({
         title: "Success",
@@ -154,6 +154,17 @@ export default function EducationEntryPage() {
                 {errors.graduationYear && <p className="text-destructive text-sm">{errors.graduationYear.message}</p>}
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                    <Label htmlFor="nearbySchoolAccessDistance">Nearby School Access (km)</Label>
+                    <Input id="nearbySchoolAccessDistance" type="number" step="0.1" {...register("nearbySchoolAccessDistance")} />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="nearbyCollegeAccessDistance">Nearby College Access (km)</Label>
+                    <Input id="nearbyCollegeAccessDistance" type="number" step="0.1" {...register("nearbyCollegeAccessDistance")} />
+                </div>
+            </div>
+
             <div className="flex justify-end gap-2">
               <Button variant="outline" type="button" onClick={() => router.back()}>
                 Cancel
@@ -166,5 +177,3 @@ export default function EducationEntryPage() {
     </div>
   );
 }
-
-    
