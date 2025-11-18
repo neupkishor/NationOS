@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { useFirestore } from "@/firebase";
 import { addDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 import { collection } from "firebase/firestore";
@@ -32,7 +32,7 @@ export default function CitizenEntryPage() {
   const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
-  const { register, handleSubmit, formState: { errors } } = useForm<Inputs>();
+  const { register, handleSubmit, control, formState: { errors } } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!firestore) {
@@ -86,16 +86,23 @@ export default function CitizenEntryPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="gender">Gender</Label>
-                <Select {...register("gender")} onValueChange={(value) => {}}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Controller
+                  name="gender"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
                  {errors.gender && <p className="text-destructive text-sm">Gender is required.</p>}
               </div>
             </div>
@@ -109,16 +116,23 @@ export default function CitizenEntryPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="citizenshipType">Citizenship Type</Label>
-                 <Select {...register("citizenshipType")} onValueChange={(value) => {}}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="by_birth">By Birth</SelectItem>
-                    <SelectItem value="naturalized">Naturalized</SelectItem>
-                     <SelectItem value="by_descent">By Descent</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Controller
+                  name="citizenshipType"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="by_birth">By Birth</SelectItem>
+                        <SelectItem value="naturalized">Naturalized</SelectItem>
+                        <SelectItem value="by_descent">By Descent</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
                 {errors.citizenshipType && <p className="text-destructive text-sm">Citizenship Type is required.</p>}
               </div>
             </div>
