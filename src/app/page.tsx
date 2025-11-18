@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,11 +6,11 @@ import {
   Briefcase,
   DollarSign,
   Users,
-  Percent,
   BookOpenCheck,
   Baby,
   PersonStanding,
-  UserCheck,
+  Cake,
+  Banknote,
 } from 'lucide-react';
 import {
   ChartContainer,
@@ -44,18 +45,13 @@ type Education = {
   nearbySchoolAccessDistance?: number;
 };
 
-
-const economicData = [
-  { year: '2020', gdp: 2.1, unemployment: 5.8 },
-  { year: '2021', gdp: 3.5, unemployment: 4.9 },
-  { year: '2022', gdp: 4.2, unemployment: 4.1 },
-  { year: '2023', gdp: 3.8, unemployment: 4.3 },
-  { year: '2024', gdp: 4.5, unemployment: 3.9 },
-];
-
 const chartConfig = {
   population: {
     label: 'Population',
+    color: 'hsl(var(--chart-1))',
+  },
+  count: {
+    label: 'Count',
     color: 'hsl(var(--chart-1))',
   },
   gdp: {
@@ -66,6 +62,24 @@ const chartConfig = {
     label: 'Unemployment (%)',
     color: 'hsl(var(--chart-2))',
   },
+};
+
+const getAge = (dateString: string) => {
+  const today = new Date();
+  const birthDate = new Date(dateString);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+};
+
+const calculateMedian = (numbers: number[]) => {
+  if (numbers.length === 0) return 0;
+  const sorted = [...numbers].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 };
 
 const gcd = (a: number, b: number): number => b ? gcd(b, a % b) : a;
@@ -79,6 +93,10 @@ export default function DashboardPage() {
   const [educationAccess, setEducationAccess] = useState(0);
   const [maleFemaleRatio, setMaleFemaleRatio] = useState('N/A');
   const [childAdultRatio, setChildAdultRatio] = useState('N/A');
+  const [medianAge, setMedianAge] = useState(0);
+  const [medianIncome, setMedianIncome] = useState(0);
+  const [ageDistribution, setAgeDistribution] = useState([]);
+  const [incomeDistribution, setIncomeDistribution] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -93,18 +111,20 @@ export default function DashboardPage() {
       const citizens = citizensSnapshot.docs.map(doc => doc.data() as Citizen);
       setTotalPopulation(citizensSnapshot.size);
 
-      // Calculate children percentage and ratios
+      // Calculate age-related stats
       if (citizens.length > 0) {
-        const today = new Date();
-        const under18 = citizens.filter(c => {
-          const birthDate = new Date(c.dateOfBirth);
-          let age = today.getFullYear() - birthDate.getFullYear();
-          const m = today.getMonth() - birthDate.getMonth();
-          if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-          }
-          return age < 18;
-        }).length;
+        const ages = citizens.map(c => getAge(c.dateOfBirth));
+        setMedianAge(calculateMedian(ages));
+
+        const ageGroups = [
+          { name: '0-17', count: ages.filter(age => age <= 17).length },
+          { name: '18-35', count: ages.filter(age => age >= 18 && age <= 35).length },
+          { name: '36-55', count: ages.filter(age => age >= 36 && age <= 55).length },
+          { name: '56+', count: ages.filter(age => age > 55).length },
+        ];
+        setAgeDistribution(ageGroups as []);
+        
+        const under18 = ageGroups[0].count;
         setChildrenPercentage((under18 / citizens.length) * 100);
 
         const adults = citizens.length - under18;
@@ -128,11 +148,20 @@ export default function DashboardPage() {
         const employed = employments.filter(e => e.employmentStatus === 'Employed');
         setEmploymentRate((employed.length / employments.length) * 100);
         
-        const salaried = employments.filter(e => e.salary && e.salary > 0);
+        const salaried = employments.filter(e => e.salary && e.salary > 0).map(e => e.salary as number);
         if(salaried.length > 0) {
-          const totalMonthlySalary = salaried.reduce((acc, e) => acc + (e.salary || 0), 0);
+          const totalMonthlySalary = salaried.reduce((acc, salary) => acc + salary, 0);
           const avgMonthlySalary = totalMonthlySalary / salaried.length;
           setAvgAnnualIncome(avgMonthlySalary * 12);
+          setMedianIncome(calculateMedian(salaried));
+
+          const incomeGroups = [
+             { name: '<2k', count: salaried.filter(s => s < 2000).length },
+             { name: '2k-4k', count: salaried.filter(s => s >= 2000 && s < 4000).length },
+             { name: '4k-6k', count: salaried.filter(s => s >= 4000 && s < 6000).length },
+             { name: '>6k', count: salaried.filter(s => s >= 6000).length },
+          ];
+          setIncomeDistribution(incomeGroups as []);
         }
       }
 
@@ -165,7 +194,7 @@ export default function DashboardPage() {
     if (value >= 1_000) {
       return `$${(value / 1_000).toFixed(1)}K`;
     }
-    return `$${value.toFixed(2)}`;
+    return `$${value.toFixed(0)}`;
   }
 
   return (
@@ -249,51 +278,75 @@ export default function DashboardPage() {
             <p className="text-xs text-muted-foreground">Of total population</p>
           </CardContent>
         </Card>
+         <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Median Age</CardTitle>
+            <Cake className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{isLoading ? '...' : medianAge.toFixed(1)}</div>
+            <p className="text-xs text-muted-foreground">Median age of population</p>
+          </CardContent>
+        </Card>
+      </div>
+      
+      <div className="grid gap-4 md:grid-cols-2">
+         <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Median Monthly Income</CardTitle>
+            <Banknote className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{isLoading ? '...' : formatCurrency(medianIncome)}</div>
+            <p className="text-xs text-muted-foreground">Median of all salaried employees</p>
+          </CardContent>
+        </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
           <CardHeader>
-            <CardTitle>Population Growth</CardTitle>
-            <CardContent className="text-sm text-muted-foreground">Static demo data</CardContent>
+            <CardTitle>Age Distribution</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             <ChartContainer config={chartConfig} className="h-[300px] w-full">
               <BarChart
                 accessibilityLayer
-                data={[{ month: 'Jan', population: 186 }, { month: 'Feb', population: 305 }, { month: 'Mar', population: 237 }, { month: 'Apr', population: 278 }, { month: 'May', population: 189 }, { month: 'Jun', population: 239 }]}
+                data={ageDistribution}
                 margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
               >
                 <CartesianGrid vertical={false} />
-                <XAxis dataKey="month" tickLine={false} tickMargin={10} axisLine={false} />
+                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <YAxis />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
-                <Bar dataKey="population" fill="var(--color-population)" radius={8} />
+                <Bar dataKey="count" fill="var(--color-count)" radius={8} />
               </BarChart>
             </ChartContainer>
           </CardContent>
         </Card>
 
-        <Card className="col-span-4 md:col-span-3">
+        <Card>
           <CardHeader>
-            <CardTitle>Economic Indicators</CardTitle>
-             <CardContent className="text-sm text-muted-foreground">Static demo data</CardContent>
+            <CardTitle>Income Distribution (Monthly)</CardTitle>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfig} className="h-[300px] w-full">
-              <LineChart accessibilityLayer data={economicData} margin={{ left: 12, right: 12 }}>
+             <ChartContainer config={chartConfig} className="h-[300px] w-full">
+              <BarChart
+                accessibilityLayer
+                data={incomeDistribution}
+                margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+              >
                 <CartesianGrid vertical={false} />
-                <XAxis dataKey="year" tickLine={false} axisLine={false} tickMargin={8} />
-                <YAxis yAxisId="left" orientation="left" tickFormatter={(v) => `${v}%`} />
-                <YAxis yAxisId="right" orientation="right" tickFormatter={(v) => `${v}%`} />
-                <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-                <Line dataKey="gdp" type="monotone" stroke="var(--color-gdp)" strokeWidth={2} dot={true} yAxisId="left" name="GDP Growth" />
-                <Line dataKey="unemployment" type="monotone" stroke="var(--color-unemployment)" strokeWidth={2} dot={true} yAxisId="right" name="Unemployment" />
-              </LineChart>
+                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                <YAxis />
+                <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+                <Bar dataKey="count" fill="var(--color-count)" radius={8} />
+              </BarChart>
             </ChartContainer>
           </CardContent>
         </Card>
       </div>
     </div>
   );
-}
+
+    
