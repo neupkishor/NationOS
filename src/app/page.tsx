@@ -109,7 +109,8 @@ export default function DashboardPage() {
       const citizensQuery = query(collection(firestore, 'citizens'));
       const citizensSnapshot = await getDocs(citizensQuery);
       const citizens = citizensSnapshot.docs.map(doc => doc.data() as Citizen);
-      setTotalPopulation(citizensSnapshot.size);
+      const populationSize = citizensSnapshot.size;
+      setTotalPopulation(populationSize);
 
       // Calculate age-related stats
       if (citizens.length > 0) {
@@ -146,7 +147,9 @@ export default function DashboardPage() {
       
       if (employments.length > 0) {
         const employed = employments.filter(e => e.employmentStatus === 'Employed');
-        setEmploymentRate((employed.length / employments.length) * 100);
+        if (populationSize > 0) {
+          setEmploymentRate((employed.length / populationSize) * 100);
+        }
         
         const salaried = employments.filter(e => e.salary && e.salary > 0).map(e => e.salary as number);
         if(salaried.length > 0) {
@@ -348,5 +351,7 @@ export default function DashboardPage() {
       </div>
     </div>
   );
+
+    
 
     
