@@ -15,7 +15,7 @@ export const NAV_LINKS = [
   { href: '/report', label: 'Smart Reporting', icon: LineChart },
   { href: '/citizen-registry', label: 'Citizen Registry', icon: Users },
   { href: '/economic-employment', label: 'Economic & Employment', icon: Briefcase },
-  { href: '/agriculture-livestock', label: 'Agriculture & Livestock', icon: Tractor },
+  { href: '/agriculture', label: 'Agriculture', icon: Tractor },
   { href: '/residency-migration', label: 'Residency & Migration', icon: Wallet },
   { href: '/infrastructure-resources', label: 'Infrastructure', icon: HardHat },
 ];
