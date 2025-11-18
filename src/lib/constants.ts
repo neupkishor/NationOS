@@ -7,7 +7,6 @@ import {
   Tractor,
   Users,
   Wallet,
-  BarChart,
 } from 'lucide-react';
 
 export const NAV_LINKS = [
@@ -21,7 +20,7 @@ export const NAV_LINKS = [
 ];
 
 export const FOOTER_LINKS = [
-    { href: '#', label: 'Settings', icon: Settings },
+    { href: '/setup', label: 'Settings', icon: Settings },
 ]
 
 export const DATA_CATEGORIES = [
