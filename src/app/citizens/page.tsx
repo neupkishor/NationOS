@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Card,
   CardContent,
@@ -14,46 +16,42 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Users, TrendingUp, TrendingDown, Home } from 'lucide-react';
+import { useFirestore } from '@/firebase';
+import { collection, getDocs, query } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 
-const citizens = [
-  {
-    id: 'USR-001',
-    name: 'John Doe',
-    age: 34,
-    residency: 'Permanent',
-    location: 'District A, Ward 5',
-  },
-  {
-    id: 'USR-002',
-    name: 'Jane Smith',
-    age: 28,
-    residency: 'Permanent',
-    location: 'District B, Ward 2',
-  },
-  {
-    id: 'USR-003',
-    name: 'Sam Wilson',
-    age: 45,
-    residency: 'Temporary',
-    location: 'Abroad',
-  },
-  {
-    id: 'USR-004',
-    name: 'Emily Johnson',
-    age: 19,
-    residency: 'Permanent',
-    location: 'District A, Ward 3',
-  },
-  {
-    id: 'USR-005',
-    name: 'Michael Brown',
-    age: 62,
-    residency: 'Permanent',
-    location: 'District C, Ward 1',
-  },
-];
+type Citizen = {
+  id: string;
+  name: string;
+  dateOfBirth: string;
+  gender: string;
+  citizenshipNumber: string;
+  citizenshipType: string;
+  currentLocation: string;
+  location: string;
+};
 
 export default function CitizenRegistryPage() {
+  const firestore = useFirestore();
+  const [citizens, setCitizens] = useState<Citizen[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!firestore) return;
+
+    const fetchCitizens = async () => {
+      setIsLoading(true);
+      const citizensQuery = query(collection(firestore, 'citizens'));
+      const querySnapshot = await getDocs(citizensQuery);
+      const fetchedCitizens = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Citizen[];
+      setCitizens(fetchedCitizens);
+      setIsLoading(false);
+    };
+
+    fetchCitizens();
+  }, [firestore]);
+
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <h2 className="text-3xl font-bold tracking-tight">Citizen Registry</h2>
@@ -66,7 +64,7 @@ export default function CitizenRegistryPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,234,567</div>
+            <div className="text-2xl font-bold">{isLoading ? '...' : citizens.length}</div>
             <p className="text-xs text-muted-foreground">
               National citizen database
             </p>
@@ -113,40 +111,46 @@ export default function CitizenRegistryPage() {
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Recent Registrations</CardTitle>
+          <CardTitle>Citizen Records</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
+                <TableHead>Citizenship No.</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Age</TableHead>
-                <TableHead>Residency</TableHead>
+                <TableHead>Date of Birth</TableHead>
+                <TableHead>Gender</TableHead>
+                <TableHead>Citizenship Type</TableHead>
                 <TableHead>Location</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {citizens.map((citizen) => (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center">Loading citizen data...</TableCell>
+                </TableRow>
+              ) : citizens.map((citizen) => (
                 <TableRow key={citizen.id}>
-                  <TableCell className="font-medium">{citizen.id}</TableCell>
+                  <TableCell className="font-medium">{citizen.citizenshipNumber}</TableCell>
                   <TableCell>{citizen.name}</TableCell>
-                  <TableCell>{citizen.age}</TableCell>
+                  <TableCell>{citizen.dateOfBirth}</TableCell>
+                  <TableCell>{citizen.gender}</TableCell>
                   <TableCell>
                     <Badge
-                      variant={
-                        citizen.residency === 'Permanent'
-                          ? 'default'
-                          : 'secondary'
-                      }
-                      className={citizen.residency === 'Permanent' ? 'bg-primary/80' : ''}
+                      variant={'secondary'}
                     >
-                      {citizen.residency}
+                      {citizen.citizenshipType.replace('_', ' ')}
                     </Badge>
                   </TableCell>
                   <TableCell>{citizen.location}</TableCell>
                 </TableRow>
               ))}
+              {!isLoading && citizens.length === 0 && (
+                 <TableRow>
+                  <TableCell colSpan={6} className="text-center">No citizen records found.</TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
