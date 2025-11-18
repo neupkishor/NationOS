@@ -103,7 +103,7 @@ export default function AgricultureLivestockPage() {
               <BarChart data={cropData}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
-                <YAxis tickFormatter={(value) => `${value/1000}k`} />
+                <YAxis tickFormatter={(value) => `${Number(value) / 1000}k`} />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar dataKey="tons" fill="var(--color-tons)" radius={4} />
               </BarChart>
