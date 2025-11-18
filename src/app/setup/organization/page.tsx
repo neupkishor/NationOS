@@ -1,5 +1,6 @@
+'use client';
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
@@ -11,13 +12,35 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus } from "lucide-react";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection, query } from "firebase/firestore";
 
-const organizations = [
-  { id: "org_1", name: "Ministry of Health", region: "National", location: "Capital City" },
-  { id: "org_2", name: "District A Education Board", region: "District A", location: "Townsville" },
-];
+type Organization = {
+  id: string;
+  name: string;
+  regionId: string;
+  location: string;
+};
 
 export default function OrganizationSetupPage() {
+  const firestore = useFirestore();
+
+  const organizationsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'organizations'));
+  }, [firestore]);
+
+  const { data: organizations, isLoading } = useCollection<Organization>(organizationsQuery);
+
+  const regionsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'regions'));
+  }, [firestore]);
+  
+  const { data: regions } = useCollection<{id: string, name: string}>(regionsQuery);
+  const regionMap = regions ? new Map(regions.map(r => [r.id, r.name])) : new Map();
+
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between">
@@ -46,10 +69,15 @@ export default function OrganizationSetupPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {organizations.map((org) => (
+              {isLoading && (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center">Loading organizations...</TableCell>
+                </TableRow>
+              )}
+              {!isLoading && organizations?.map((org) => (
                 <TableRow key={org.id}>
                   <TableCell className="font-medium">{org.name}</TableCell>
-                  <TableCell>{org.region}</TableCell>
+                  <TableCell>{regionMap.get(org.regionId) || org.regionId}</TableCell>
                   <TableCell>{org.location}</TableCell>
                   <TableCell className="text-right">
                     <Button variant="outline" size="sm" asChild>
@@ -58,6 +86,11 @@ export default function OrganizationSetupPage() {
                   </TableCell>
                 </TableRow>
               ))}
+               {!isLoading && organizations?.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center">No organizations found.</TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
@@ -65,3 +98,4 @@ export default function OrganizationSetupPage() {
     </div>
   );
 }
+    

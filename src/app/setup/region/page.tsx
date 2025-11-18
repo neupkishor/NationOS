@@ -1,5 +1,6 @@
+'use client';
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
@@ -11,13 +12,25 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus } from "lucide-react";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection, query } from "firebase/firestore";
 
-const regions = [
-  { id: "region_1", name: "National", type: "Country" },
-  { id: "region_2", name: "District A", type: "District" },
-];
+type Region = {
+  id: string,
+  name: string;
+  type: string;
+}
 
 export default function RegionSetupPage() {
+  const firestore = useFirestore();
+
+  const regionsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'regions'));
+  }, [firestore]);
+
+  const { data: regions, isLoading } = useCollection<Region>(regionsQuery);
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between">
@@ -45,7 +58,12 @@ export default function RegionSetupPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {regions.map((region) => (
+              {isLoading && (
+                 <TableRow>
+                  <TableCell colSpan={3} className="text-center">Loading regions...</TableCell>
+                </TableRow>
+              )}
+              {!isLoading && regions?.map((region) => (
                 <TableRow key={region.id}>
                   <TableCell className="font-medium">{region.name}</TableCell>
                   <TableCell>{region.type}</TableCell>
@@ -56,6 +74,11 @@ export default function RegionSetupPage() {
                   </TableCell>
                 </TableRow>
               ))}
+               {!isLoading && regions?.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center">No regions found. Create one to get started.</TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
@@ -63,4 +86,4 @@ export default function RegionSetupPage() {
     </div>
   );
 }
-
+    

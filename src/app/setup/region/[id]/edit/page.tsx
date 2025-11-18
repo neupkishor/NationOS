@@ -1,11 +1,58 @@
+'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useDoc, useFirestore, useMemoFirebase } from "@/firebase";
+import { doc } from "firebase/firestore";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { updateDocumentNonBlocking } from "@/firebase/non-blocking-updates";
+
+type Region = {
+  id: string;
+  name: string;
+  type: string;
+}
 
 export default function EditRegionPage({ params }: { params: { id: string } }) {
+  const firestore = useFirestore();
+  const router = useRouter();
+
+  const regionRef = useMemoFirebase(() => {
+    if (!firestore || !params.id) return null;
+    return doc(firestore, 'regions', params.id);
+  }, [firestore, params.id]);
+  
+  const { data: region, isLoading } = useDoc<Region>(regionRef);
+
+  const [name, setName] = useState('');
+  const [type, setType] = useState('');
+
+  useEffect(() => {
+    if (region) {
+      setName(region.name);
+      setType(region.type);
+    }
+  }, [region]);
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!regionRef) return;
+    updateDocumentNonBlocking(regionRef, { name, type });
+    router.push('/setup/region');
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (!region && !isLoading) {
+    return <div>Region not found.</div>
+  }
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <Card>
@@ -14,20 +61,20 @@ export default function EditRegionPage({ params }: { params: { id: string } }) {
           <CardDescription>Editing details for region ID: {params.id}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSave}>
             <div className="space-y-2">
               <Label htmlFor="region-name">Region Name</Label>
-              <Input id="region-name" defaultValue="District A" />
+              <Input id="region-name" value={name} onChange={e => setName(e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="region-type">Region Type</Label>
-              <Input id="region-type" defaultValue="District" />
+              <Input id="region-type" value={type} onChange={e => setType(e.target.value)} />
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" asChild>
                 <Link href="/setup/region">Cancel</Link>
               </Button>
-              <Button>Save Changes</Button>
+              <Button type="submit">Save Changes</Button>
             </div>
           </form>
         </CardContent>
@@ -35,3 +82,4 @@ export default function EditRegionPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
+    

@@ -271,10 +271,33 @@ service cloud.firestore {
      * @principle Enforces document ownership for writes.
      */
     match /citizens/{citizenId}/reports/{reportId} {
-      allow get, list: if isOwner(citizenId);
-      allow create: if isOwner(citizenId) && request.resource.data.citizenId == citizenId;
+      allow get, list: if isOwner( citizenId);
+      allow create: if isOwner( citizenId) && request.resource.data.citizenId == citizenId;
       allow update: if isExistingOwner(citizenId) && resource.data.citizenId == citizenId;
       allow delete: if isExistingOwner(citizenId) && resource.data.citizenId == citizenId;
     }
+    
+    /**
+     * @description Rules for the /regions/{regionId} collection.
+     * @path /regions/{regionId}
+     * @allow (read) - Any authenticated user can read region data.
+     * @allow (write) - Any authenticated user can write to region data.
+     * @principle Public read-write access for all authenticated users.
+     */
+    match /regions/{regionId} {
+      allow read, write: if isSignedIn();
+    }
+    
+    /**
+     * @description Rules for the /organizations/{organizationId} collection.
+     * @path /organizations/{organizationId}
+     * @allow (read) - Any authenticated user can read organization data.
+     * @allow (write) - Any authenticated user can write to organization data.
+     * @principle Public read-write access for all authenticated users.
+     */
+    match /organizations/{organizationId} {
+      allow read, write: if isSignedIn();
+    }
   }
 }
+    
