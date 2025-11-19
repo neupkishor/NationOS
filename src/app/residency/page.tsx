@@ -19,22 +19,18 @@ import { useFirestore } from '@/firebase';
 import { collectionGroup, getDocs, query } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
-const migrationData = [
-  { year: '2020', internal: 12000, international: 4500 },
-  { year: '2021', internal: 15000, international: 5200 },
-  { year: '2022', internal: 13000, international: 6100 },
-  { year: '2023', internal: 18000, international: 5800 },
-  { year: '2024', internal: 22000, international: 7100 },
-];
-
 const chartConfig = {
-  internal: { label: 'Internal Migration', color: 'hsl(var(--chart-1))' },
-  international: { label: 'International Migration', color: 'hsl(var(--chart-2))' },
+  migrations: { label: 'Total Migrations', color: 'hsl(var(--chart-1))' },
+};
+
+type MigrationHistory = {
+  migrationDate: string; // ISO string format
 };
 
 export default function ResidencyPage() {
   const firestore = useFirestore();
   const [totalMigrations, setTotalMigrations] = useState(0);
+  const [migrationChartData, setMigrationChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -44,7 +40,38 @@ export default function ResidencyPage() {
       setIsLoading(true);
       const migrationQuery = query(collectionGroup(firestore, 'migrationHistories'));
       const querySnapshot = await getDocs(migrationQuery);
-      setTotalMigrations(querySnapshot.size);
+      const migrations = querySnapshot.docs.map(doc => doc.data() as MigrationHistory);
+      
+      setTotalMigrations(migrations.length);
+
+      // Process data for the chart
+      const currentYear = new Date().getFullYear();
+      const yearlyCounts: { [year: string]: number } = {};
+
+      for (let i = 0; i < 5; i++) {
+        yearlyCounts[currentYear - i] = 0;
+      }
+
+      migrations.forEach(mig => {
+        try {
+          const year = new Date(mig.migrationDate).getFullYear();
+          if (yearlyCounts[year] !== undefined) {
+            yearlyCounts[year]++;
+          }
+        } catch (e) {
+          console.error("Invalid migrationDate format:", mig.migrationDate);
+        }
+      });
+      
+      const formattedChartData = Object.entries(yearlyCounts)
+        .map(([year, count]) => ({
+          year: year,
+          migrations: count,
+        }))
+        .sort((a, b) => parseInt(a.year) - parseInt(b.year));
+        
+      setMigrationChartData(formattedChartData as []);
+
       setIsLoading(false);
     };
     
@@ -117,14 +144,13 @@ export default function ResidencyPage() {
         </CardHeader>
         <CardContent>
           <ChartContainer config={chartConfig} className="h-[400px] w-full">
-            <LineChart data={migrationData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+            <LineChart data={migrationChartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="year" />
               <YAxis tickFormatter={(value) => `${value/1000}k`} />
               <ChartTooltip content={<ChartTooltipContent />} />
               <Legend />
-              <Line type="monotone" dataKey="internal" stroke="var(--color-internal)" strokeWidth={2} />
-              <Line type="monotone" dataKey="international" stroke="var(--color-international)" strokeWidth={2} />
+              <Line type="monotone" dataKey="migrations" stroke="var(--color-migrations)" strokeWidth={2} />
             </LineChart>
           </ChartContainer>
         </CardContent>
