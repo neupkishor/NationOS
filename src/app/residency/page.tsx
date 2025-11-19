@@ -138,9 +138,9 @@ export default function ResidencyPage() {
             <Shuffle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">22,000</div>
+            <div className="text-2xl font-bold">N/A</div>
             <p className="text-xs text-muted-foreground">
-              Movement between districts
+              Data not available
             </p>
           </CardContent>
         </Card>
@@ -152,8 +152,10 @@ export default function ResidencyPage() {
             <Plane className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">7,100</div>
-            <p className="text-xs text-muted-foreground">Net inflow of people</p>
+            <div className="text-2xl font-bold">N/A</div>
+            <p className="text-xs text-muted-foreground">
+              Data not available
+            </p>
           </CardContent>
         </Card>
       </div>
