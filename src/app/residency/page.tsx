@@ -16,7 +16,7 @@ import {
 import { Globe, Plane, Shuffle, Users } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 import { useFirestore } from '@/firebase';
-import { collectionGroup, getDocs, query } from 'firebase/firestore';
+import { collection, collectionGroup, getDocs, query } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
 const chartConfig = {
@@ -27,31 +27,39 @@ type MigrationHistory = {
   migrationDate: string; // ISO string format
 };
 
+type Citizen = {
+    id: string;
+    location: string;
+    currentLocation: string;
+};
+
 export default function ResidencyPage() {
   const firestore = useFirestore();
   const [totalMigrations, setTotalMigrations] = useState(0);
   const [migrationChartData, setMigrationChartData] = useState([]);
+  const [permanentResidents, setPermanentResidents] = useState(0);
+  const [totalPopulation, setTotalPopulation] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!firestore) return;
 
-    const fetchMigrations = async () => {
+    const fetchAllData = async () => {
       setIsLoading(true);
+
+      // Fetch migrations
       const migrationQuery = query(collectionGroup(firestore, 'migrationHistories'));
-      const querySnapshot = await getDocs(migrationQuery);
-      const migrations = querySnapshot.docs.map(doc => doc.data() as MigrationHistory);
+      const migrationSnapshot = await getDocs(migrationQuery);
+      const migrations = migrationSnapshot.docs.map(doc => doc.data() as MigrationHistory);
       
       setTotalMigrations(migrations.length);
 
-      // Process data for the chart
+      // Process migration data for the chart
       const currentYear = new Date().getFullYear();
       const yearlyCounts: { [year: string]: number } = {};
-
       for (let i = 0; i < 5; i++) {
         yearlyCounts[currentYear - i] = 0;
       }
-
       migrations.forEach(mig => {
         try {
           const year = new Date(mig.migrationDate).getFullYear();
@@ -62,21 +70,34 @@ export default function ResidencyPage() {
           console.error("Invalid migrationDate format:", mig.migrationDate);
         }
       });
-      
       const formattedChartData = Object.entries(yearlyCounts)
         .map(([year, count]) => ({
           year: year,
           migrations: count,
         }))
         .sort((a, b) => parseInt(a.year) - parseInt(b.year));
-        
       setMigrationChartData(formattedChartData as []);
+
+      // Fetch citizens for permanent residency stats
+      const citizensQuery = query(collection(firestore, 'citizens'));
+      const citizensSnapshot = await getDocs(citizensQuery);
+      const citizens = citizensSnapshot.docs.map(doc => doc.data() as Citizen);
+      
+      const population = citizens.length;
+      setTotalPopulation(population);
+
+      if (population > 0) {
+        const permaResidentsCount = citizens.filter(c => c.location === c.currentLocation).length;
+        setPermanentResidents(permaResidentsCount);
+      }
 
       setIsLoading(false);
     };
     
-    fetchMigrations();
+    fetchAllData();
   }, [firestore]);
+
+  const permanentResidentsPercentage = totalPopulation > 0 ? ((permanentResidents / totalPopulation) * 100).toFixed(1) : 0;
 
 
   return (
@@ -93,8 +114,8 @@ export default function ResidencyPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">42.5M</div>
-            <p className="text-xs text-muted-foreground">94% of total population</p>
+            <div className="text-2xl font-bold">{isLoading ? '...' : permanentResidents.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">{isLoading ? '...' : `${permanentResidentsPercentage}% of total population`}</p>
           </CardContent>
         </Card>
         <Card>
