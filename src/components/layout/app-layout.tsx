@@ -8,21 +8,17 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-  // Get cookie for default open state
-  // const layout = cookies().get('react-resizable:layout');
-  // const defaultLayout = layout ? JSON.parse(layout.value) : undefined;
-  
   return (
-    <SidebarProvider defaultOpen>
-      <Sidebar>
-        <MainNav />
-      </Sidebar>
-      <SidebarInset className="flex flex-col">
-        <Header />
-        <main className="flex-1 overflow-y-auto">
-          {children}
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+    <div className="mx-auto max-w-[1440px]">
+      <SidebarProvider defaultOpen>
+        <Sidebar>
+          <MainNav />
+        </Sidebar>
+        <SidebarInset className="flex flex-col">
+          <Header />
+          <main className="flex-1 overflow-y-auto">{children}</main>
+        </SidebarInset>
+      </SidebarProvider>
+    </div>
   );
 }

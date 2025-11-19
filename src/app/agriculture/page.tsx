@@ -1,3 +1,6 @@
+
+'use client';
+
 import {
   Card,
   CardContent,
@@ -10,7 +13,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { Tractor, AreaChart, Wheat, Sheep } from 'lucide-react';
+import { Tractor, AreaChart, Wheat, Drama } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 const cropData = [
@@ -33,11 +36,11 @@ const chartConfig = {
   count: { label: 'Count', color: 'hsl(var(--chart-2))' },
 };
 
-export default function AgricultureLivestockPage() {
+export default function AgriculturePage() {
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <h2 className="text-3xl font-bold tracking-tight">
-        Agriculture & Livestock
+        Agriculture
       </h2>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -48,9 +51,9 @@ export default function AgricultureLivestockPage() {
             <Tractor className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">234M Tons</div>
+            <div className="text-2xl font-bold">N/A</div>
             <p className="text-xs text-muted-foreground">
-              +8% from last year
+              Data not available
             </p>
           </CardContent>
         </Card>
@@ -62,9 +65,9 @@ export default function AgricultureLivestockPage() {
             <AreaChart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1.2M Hectares</div>
+            <div className="text-2xl font-bold">N/A</div>
             <p className="text-xs text-muted-foreground">
-              +1.5% from last year
+              Data not available
             </p>
           </CardContent>
         </Card>
@@ -76,18 +79,18 @@ export default function AgricultureLivestockPage() {
             <Wheat className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Corn</div>
-            <p className="text-xs text-muted-foreground">78k tons produced</p>
+            <div className="text-2xl font-bold">N/A</div>
+            <p className="text-xs text-muted-foreground">Data not available</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Livestock Count</CardTitle>
-            <Sheep className="h-4 w-4 text-muted-foreground" />
+            <Drama className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">205k Heads</div>
-            <p className="text-xs text-muted-foreground">Total across categories</p>
+            <div className="text-2xl font-bold">N/A</div>
+            <p className="text-xs text-muted-foreground">Data not available</p>
           </CardContent>
         </Card>
       </div>
@@ -103,7 +106,7 @@ export default function AgricultureLivestockPage() {
               <BarChart data={cropData}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
-                <YAxis tickFormatter={(value) => `${value/1000}k`} />
+                <YAxis tickFormatter={(value) => `${Number(value) / 1000}k`} />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar dataKey="tons" fill="var(--color-tons)" radius={4} />
               </BarChart>
