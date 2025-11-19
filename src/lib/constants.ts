@@ -19,10 +19,10 @@ import {
 
 export const NAV_LINKS = [
   { href: '/', label: 'Dashboard', icon: Home },
-  { href: '/entry', label: 'Data Entry', icon: FilePlus },
-  { href: '/citizens', label: 'Citizen Registry', icon: Users },
-  { href: '/report', label: 'Smart Reporting', icon: LineChart },
-  { href: '/economic-employment', label: 'Economic', icon: Briefcase },
+  { href: '/entry', label: 'Entry', icon: FilePlus },
+  { href: '/citizens', label: 'Citizens', icon: Users },
+  { href: '/report', label: 'Report', icon: LineChart },
+  { href: '/economic-employment', label: 'Economy', icon: Briefcase },
   { href: '/agriculture', label: 'Agriculture', icon: Tractor },
   { href: '/residency', label: 'Residency', icon: Globe },
   { href: '/infrastructure', label: 'Infrastructure', icon: HardHat },

@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -56,9 +57,9 @@ export default function EconomicEmploymentPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$45,231</div>
+            <div className="text-2xl font-bold">N/A</div>
             <p className="text-xs text-muted-foreground">
-              +5.2% from last year
+              Data not available
             </p>
           </CardContent>
         </Card>
@@ -70,8 +71,8 @@ export default function EconomicEmploymentPage() {
             <Briefcase className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3.9%</div>
-            <p className="text-xs text-muted-foreground">-0.2% from last month</p>
+            <div className="text-2xl font-bold">N/A</div>
+            <p className="text-xs text-muted-foreground">Data not available</p>
           </CardContent>
         </Card>
         <Card>
@@ -82,7 +83,7 @@ export default function EconomicEmploymentPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">25.8M</div>
+            <div className="text-2xl font-bold">N/A</div>
             <p className="text-xs text-muted-foreground">
               Total active workers
             </p>
@@ -96,7 +97,7 @@ export default function EconomicEmploymentPage() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+120k</div>
+            <div className="text-2xl font-bold">N/A</div>
             <p className="text-xs text-muted-foreground">This quarter</p>
           </CardContent>
         </Card>

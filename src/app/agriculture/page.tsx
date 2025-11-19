@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -50,9 +51,9 @@ export default function AgriculturePage() {
             <Tractor className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">234M Tons</div>
+            <div className="text-2xl font-bold">N/A</div>
             <p className="text-xs text-muted-foreground">
-              +8% from last year
+              Data not available
             </p>
           </CardContent>
         </Card>
@@ -64,9 +65,9 @@ export default function AgriculturePage() {
             <AreaChart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1.2M Hectares</div>
+            <div className="text-2xl font-bold">N/A</div>
             <p className="text-xs text-muted-foreground">
-              +1.5% from last year
+              Data not available
             </p>
           </CardContent>
         </Card>
@@ -78,8 +79,8 @@ export default function AgriculturePage() {
             <Wheat className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Corn</div>
-            <p className="text-xs text-muted-foreground">78k tons produced</p>
+            <div className="text-2xl font-bold">N/A</div>
+            <p className="text-xs text-muted-foreground">Data not available</p>
           </CardContent>
         </Card>
         <Card>
@@ -88,8 +89,8 @@ export default function AgriculturePage() {
             <Drama className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">205k Heads</div>
-            <p className="text-xs text-muted-foreground">Total across categories</p>
+            <div className="text-2xl font-bold">N/A</div>
+            <p className="text-xs text-muted-foreground">Data not available</p>
           </CardContent>
         </Card>
       </div>
