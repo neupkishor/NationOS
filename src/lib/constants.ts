@@ -24,7 +24,7 @@ export const NAV_LINKS = [
   { href: '/report', label: 'Smart Reporting', icon: LineChart },
   { href: '/economic-employment', label: 'Economic', icon: Briefcase },
   { href: '/agriculture', label: 'Agriculture', icon: Tractor },
-  { href: '/residency-migration', label: 'Residency', icon: Globe },
+  { href: '/residency', label: 'Residency', icon: Globe },
   { href: '/infrastructure', label: 'Infrastructure', icon: HardHat },
 ];
 

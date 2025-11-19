@@ -32,7 +32,7 @@ const chartConfig = {
   international: { label: 'International Migration', color: 'hsl(var(--chart-2))' },
 };
 
-export default function ResidencyMigrationPage() {
+export default function ResidencyPage() {
   const firestore = useFirestore();
   const [totalMigrations, setTotalMigrations] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,7 +55,7 @@ export default function ResidencyMigrationPage() {
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <h2 className="text-3xl font-bold tracking-tight">
-        Residency & Migration Tracker
+        Residency & Migration
       </h2>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
